@@ -40,7 +40,7 @@ def list_users():
     table.add_column("ID", style="cyan", justify="center")
     table.add_column("Name", style="green")
     table.add_column("Email", style="blue")
-    table.add_column("Accounts", style="magenta", justify="center")
+    table.add_column("Accounts", style0719-4d27-b496-9b1e8bc6e9f5="magenta", justify="center")
     
     for i, user in enumerate(users):
         table.add_row(
@@ -56,30 +56,30 @@ def list_users():
 def select_user():
     """Helper function to select a user from the list"""
     if not users:
-        console.print("No users available. Please create a user first.", style="bold red")
-        return None
-
+        raise ValueError("No users available. Please create a user first.")
+    
     table = Table(title="👤 Select User")
     table.add_column("ID", style="cyan", justify="center")
     table.add_column("Name", style="green")
     table.add_column("Email", style="blue")
-
+    
     for i, user in enumerate(users):
-        table.add_row(str(i + 1), user.name, user.email)
-
+        table.add_row(
+            str(i + 1),
+            user.name,
+            user.email
+        )
+    
     console.print(table)
-
-    choice = Prompt.ask("Select user by ID")
-    if not choice.isdigit():
-        console.print("Invalid input. Please enter a number.", style="bold red")
-        return None
-
-    choice = int(choice)
-    if choice < 1 or choice > len(users):
-        console.print("Invalid user selection. Please select a valid ID.", style="bold red")
-        return None
-
-    return users[choice - 1]
+    
+    try:
+        choice = Prompt.ask("Select user by ID")
+        choice = int(choice)
+        if choice < 1 or choice > len(users):
+            raise ValueError("Invalid user ID.")
+        return users[choice - 1]
+    except ValueError:
+        raise ValueError("Invalid user ID.")
 
 def create_account():
     """Create a new account for an existing user"""
@@ -90,8 +90,10 @@ def create_account():
         Prompt.ask("\nPress Enter to continue")
         return
     
-    user = select_user()
-    if not user:
+    try:
+        user = select_user()
+    except ValueError as e:
+        console.print(f"Error: {str(e)}", style="bold red")
         Prompt.ask("\nPress Enter to continue")
         return
     
@@ -176,8 +178,10 @@ def deposit_money():
     """Deposit money into a user's account"""
     console.print("\n[bold cyan]Deposit Money[/bold cyan]")
     
-    user = select_user()
-    if not user:
+    try:
+        user = select_user()
+    except ValueError as e:
+        console.print(f"Error: {str(e)}", style="bold red")
         Prompt.ask("\nPress Enter to continue")
         return
     
@@ -212,8 +216,10 @@ def withdraw_money():
     """Withdraw money from a user's account"""
     console.print("\n[bold cyan]Withdraw Money[/bold cyan]")
     
-    user = select_user()
-    if not user:
+    try:
+        user = select_user()
+    except ValueError as e:
+        console.print(f"Error: {str(e)}", style="bold red")
         Prompt.ask("\nPress Enter to continue")
         return
     
@@ -248,8 +254,10 @@ def view_transactions():
     """View transaction history for a user's account"""
     console.print("\n[bold cyan]View Transactions[/bold cyan]")
     
-    user = select_user()
-    if not user:
+    try:
+        user = select_user()
+    except ValueError as e:
+        console.print(f"Error: {str(e)}", style="bold red")
         Prompt.ask("\nPress Enter to continue")
         return
     
