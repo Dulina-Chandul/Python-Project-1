@@ -15,8 +15,8 @@ def create_user():
     email = Prompt.ask("Enter user email")
     
     # Validate email format (basic validation)
-    if "@" not in email or "." not in email:
-        console.print("Invalid email format! Please use a valid email address.", style="bold red")
+    if not User("", email).is_valid_email(email):
+        console.print("Invalid email format! Please use a valid email address (e.g., name@domain.com).", style="bold red")
         Prompt.ask("\nPress Enter to continue")
         return
     
@@ -79,13 +79,14 @@ def select_user():
     console.print(table)
     
     try:
-        choice = int(Prompt.ask("Select user by ID", default="1"))
+        choice = Prompt.ask("Select user by ID", default="1")
+        choice = int(choice)
         if choice < 1 or choice > len(users):
-            console.print("Invalid user selection.", style="bold red")
+            console.print("Invalid user selection.\n", style="bold red")
             return None
         return users[choice - 1]
     except ValueError:
-        console.print("Invalid user selection.", style="bold red")
+        console.print("Invalid user selection.\n", style="bold red")
         return None
 
 def create_account():
@@ -148,7 +149,7 @@ def create_account():
     
     user.add_account(account)
     console.print(f"[bold green]{account.get_account_type()} created successfully for {user.name}![/bold green]")
-    console.print(f"Initial balance: ${initial_balance}")
+    console.print(f"Initial balance: ${initial_balance:.2f}")
     Prompt.ask("\nPress Enter to continue")
 
 def select_account(user):
