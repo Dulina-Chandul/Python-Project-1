@@ -40,7 +40,7 @@ def list_users():
     table.add_column("ID", style="cyan", justify="center")
     table.add_column("Name", style="green")
     table.add_column("Email", style="blue")
-    table.add_column("Accounts", style0719-4d27-b496-9b1e8bc6e9f5="magenta", justify="center")
+    table.add_column("Accounts", style="magenta", justify="center")
     
     for i, user in enumerate(users):
         table.add_row(
