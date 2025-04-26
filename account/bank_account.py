@@ -3,8 +3,7 @@ from account.transaction import Transaction
 class BankAccount:
     def __init__(self, name="John", email="john@gmail.com", initial_balance=0):
         if not isinstance(initial_balance, (int, float)) or initial_balance < 0:
-            print("Invalid initial balance!")
-            initial_balance = 0
+            raise ValueError("Invalid initial balance!")
         self.balance = initial_balance
         self.transactions_history = []
         self.account_type = "Generic"
@@ -13,20 +12,17 @@ class BankAccount:
 
     def deposit(self, amount):
         if not isinstance(amount, (int, float)) or amount <= 0:
-            print("Deposit amount is invalid!")
-            return False
+            raise ValueError("Deposit amount is invalid!")
         self.balance += amount
         self.transactions_history.append(Transaction(amount, "deposit"))
         return True
 
     def withdraw(self, amount):
         if not isinstance(amount, (int, float)) or amount <= 0:
-            print("Withdrawal amount is invalid!")
-            return False
+            raise ValueError("Withdrawal amount is invalid!")
         if self.balance < amount:
-            print("Insufficient Balance!")
-            return False
-        self.balance -= amount  # Fixed: Now correctly subtracts the amount
+            raise ValueError("Insufficient Balance!")
+        self.balance -= amount
         self.transactions_history.append(Transaction(amount, "withdraw"))
         return True
 
@@ -45,35 +41,33 @@ class SavingsAccount(BankAccount):
 
     def withdraw(self, amount):
         if not isinstance(amount, (int, float)) or amount <= 0:
-            print("Withdrawal amount is invalid!")
-            return False
-        if self.balance - amount < self.MIN_BALANCE:
-            print(f"Minimum balance of ${self.MIN_BALANCE} required for Savings Account!")
-            return False
+            raise ValueError("Withdrawal amount is invalid!")
+        if self.balance < amount:
+            raise ValueError("Insufficient Balance!")
+        if self.balance - amount <= self.MIN_BALANCE:
+            raise ValueError(f"Cannot withdraw below minimum balance of ${self.MIN_BALANCE}!")
         self.balance -= amount
         self.transactions_history.append(Transaction(amount, "withdraw"))
         return True
 
     def get_account_type(self):
-        return "Savings account"
+        return "Savings Account"
 
 
 class CurrentAccount(BankAccount):
     def get_account_type(self):
-        return "Current account"
+        return "Current Account"
 
 
 class StudentAccount(BankAccount):
     def withdraw(self, amount):
         if not isinstance(amount, (int, float)) or amount <= 0:
-            print("Withdrawal amount is invalid!")
-            return False
-        if (self.balance - amount) < 100:
-            print("A minimum balance of Rs.100 needed to withdraw from a Students account!")
-            return False
+            raise ValueError("Withdrawal amount is invalid!")
+        if self.balance - amount < 100:
+            raise ValueError("Cannot withdraw below minimum balance of $100!")
         self.balance -= amount
         self.transactions_history.append(Transaction(amount, "withdraw"))
         return True
 
     def get_account_type(self):
-        return "Students account"
+        return "Students Account"

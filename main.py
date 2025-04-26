@@ -2,7 +2,6 @@ import os
 import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-
 from rich.console import Console
 from rich.table import Table
 from rich.prompt import Prompt
@@ -17,14 +16,12 @@ def menu():
     try:
         while True:
             console.clear()
-            # Display welcome banner
             console.print(Panel.fit(
                 "[bold magenta]Welcome to PyBank CLI[/bold magenta]\n"
                 "[italic]A Python-based Banking System[/italic]",
                 border_style="green"
             ))
             
-            # Create menu table
             table = Table(title="🏦 Bank System Menu", title_style="bold magenta")
             table.add_column("Option", style="cyan", justify="center")
             table.add_column("Description", style="white")
@@ -37,14 +34,12 @@ def menu():
             table.add_row("7", "Exit")
             console.print(table)
             
-            # Get user choice with validation
             choice = Prompt.ask(
                 "👉 Choose option", 
                 choices=[str(i) for i in range(1, 8)], 
                 default="7"
             )
             
-            # Process the chosen option
             if choice == '1':
                 create_user()
             elif choice == '2':

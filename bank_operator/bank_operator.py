@@ -14,22 +14,17 @@ def create_user():
     name = Prompt.ask("Enter user name")
     email = Prompt.ask("Enter user email")
     
-    # Validate email format (basic validation)
-    if not User("", email).is_valid_email(email):
-        console.print("Invalid email format! Please use a valid email address (e.g., name@domain.com).", style="bold red")
-        Prompt.ask("\nPress Enter to continue")
-        return
-    
-    # Check if email already exists
-    for user in users:
-        if user.email == email:
-            console.print("User with this email already exists!", style="bold red")
-            Prompt.ask("\nPress Enter to continue")
-            return
-    
-    new_user = User(name, email)
-    users.append(new_user)
-    console.print(f"User [bold green]{name}[/bold green] created successfully!", style="bold green")
+    try:
+        new_user = User(name, email)
+        for user in users:
+            if user.email == email:
+                console.print("User with this email already exists!", style="bold red")
+                Prompt.ask("\nPress Enter to continue")
+                return
+        users.append(new_user)
+        console.print(f"User [bold green]{name}[/bold green] created successfully!", style="bold green")
+    except ValueError as e:
+        console.print(f"Error: {str(e)}", style="bold red")
     Prompt.ask("\nPress Enter to continue")
 
 def list_users():
@@ -79,33 +74,30 @@ def select_user():
     console.print(table)
     
     try:
-        choice = Prompt.ask("Select user by ID", default="1")
+        choice = Prompt.ask("Select user by ID")
         choice = int(choice)
         if choice < 1 or choice > len(users):
-            console.print("Invalid user selection.\n", style="bold red")
+            console.print("Invalid user selection.", style="bold red")
             return None
         return users[choice - 1]
     except ValueError:
-        console.print("Invalid user selection.\n", style="bold red")
+        console.print("Invalid user selection.", style="bold red")
         return None
 
 def create_account():
     """Create a new account for an existing user"""
     console.print("\n[bold cyan]Create New Account[/bold cyan]")
     
-    # Check if users exist
     if not users:
         console.print("No users available. Please create a user first.", style="bold red")
         Prompt.ask("\nPress Enter to continue")
         return
     
-    # Select user
     user = select_user()
     if not user:
         Prompt.ask("\nPress Enter to continue")
         return
     
-    # Select account type
     console.print("\n[bold cyan]Select Account Type[/bold cyan]")
     account_types = {
         "1": "Savings Account",
@@ -123,7 +115,6 @@ def create_account():
     console.print(table)
     account_choice = Prompt.ask("Choose account type", choices=["1", "2", "3"], default="1")
     
-    # Get initial deposit
     try:
         initial_balance = float(Prompt.ask("Enter initial deposit amount", default="0"))
         if initial_balance < 0:
@@ -135,21 +126,23 @@ def create_account():
         Prompt.ask("\nPress Enter to continue")
         return
     
-    # Create account based on type
-    if account_choice == "1":
-        account = SavingsAccount(user.name, user.email, initial_balance)
-    elif account_choice == "2":
-        account = CurrentAccount(user.name, user.email, initial_balance)
-    elif account_choice == "3":
-        account = StudentAccount(user.name, user.email, initial_balance)
-    else:
-        console.print("Invalid account type!", style="bold red")
-        Prompt.ask("\nPress Enter to continue")
-        return
-    
-    user.add_account(account)
-    console.print(f"[bold green]{account.get_account_type()} created successfully for {user.name}![/bold green]")
-    console.print(f"Initial balance: ${initial_balance:.2f}")
+    try:
+        if account_choice == "1":
+            account = SavingsAccount(user.name, user.email, initial_balance)
+        elif account_choice == "2":
+            account = CurrentAccount(user.name, user.email, initial_balance)
+        elif account_choice == "3":
+            account = StudentAccount(user.name, user.email, initial_balance)
+        else:
+            console.print("Invalid account type!", style="bold red")
+            Prompt.ask("\nPress Enter to continue")
+            return
+        
+        user.add_account(account)
+        console.print(f"[bold green]{account.get_account_type()} created successfully for {user.name}![/bold green]")
+        console.print(f"Initial balance: ${initial_balance:.2f}")
+    except ValueError as e:
+        console.print(f"Error: {str(e)}", style="bold red")
     Prompt.ask("\nPress Enter to continue")
 
 def select_account(user):
@@ -186,19 +179,16 @@ def deposit_money():
     """Deposit money into a user's account"""
     console.print("\n[bold cyan]Deposit Money[/bold cyan]")
     
-    # Select user
     user = select_user()
     if not user:
         Prompt.ask("\nPress Enter to continue")
         return
     
-    # Select account
     account = select_account(user)
     if not account:
         Prompt.ask("\nPress Enter to continue")
         return
     
-    # Get deposit amount
     try:
         amount = float(Prompt.ask("Enter deposit amount"))
         if amount <= 0:
@@ -210,33 +200,31 @@ def deposit_money():
         Prompt.ask("\nPress Enter to continue")
         return
     
-    # Process deposit
-    old_balance = account.get_balance()
-    account.deposit(amount)
-    new_balance = account.get_balance()
-    
-    console.print(f"[bold green]Successfully deposited ${amount:.2f}![/bold green]")
-    console.print(f"Previous balance: ${old_balance:.2f}")
-    console.print(f"New balance: ${new_balance:.2f}")
+    try:
+        old_balance = account.get_balance()
+        account.deposit(amount)
+        new_balance = account.get_balance()
+        console.print(f"[bold green]Successfully deposited ${amount:.2f}![/bold green]")
+        console.print(f"Previous balance: ${old_balance:.2f}")
+        console.print(f"New balance: ${new_balance:.2f}")
+    except ValueError as e:
+        console.print(f"Error: {str(e)}", style="bold red")
     Prompt.ask("\nPress Enter to continue")
 
 def withdraw_money():
     """Withdraw money from a user's account"""
     console.print("\n[bold cyan]Withdraw Money[/bold cyan]")
     
-    # Select user
     user = select_user()
     if not user:
         Prompt.ask("\nPress Enter to continue")
         return
     
-    # Select account
     account = select_account(user)
     if not account:
         Prompt.ask("\nPress Enter to continue")
         return
     
-    # Get withdrawal amount
     try:
         amount = float(Prompt.ask("Enter withdrawal amount"))
         if amount <= 0:
@@ -248,44 +236,31 @@ def withdraw_money():
         Prompt.ask("\nPress Enter to continue")
         return
     
-    # Process withdrawal
-    old_balance = account.get_balance()
-    
-    # Check if withdrawal would cause balance to go below minimum required
-    if isinstance(account, SavingsAccount) and old_balance - amount < account.MIN_BALANCE:
-        console.print(f"Withdrawal denied. Minimum balance of ${account.MIN_BALANCE} required.", style="bold red")
-        Prompt.ask("\nPress Enter to continue")
-        return
-    elif old_balance < amount:
-        console.print("Insufficient funds!", style="bold red")
-        Prompt.ask("\nPress Enter to continue")
-        return
-    
-    account.withdraw(amount)
-    new_balance = account.get_balance()
-    
-    console.print(f"[bold green]Successfully withdrew ${amount:.2f}![/bold green]")
-    console.print(f"Previous balance: ${old_balance:.2f}")
-    console.print(f"New balance: ${new_balance:.2f}")
+    try:
+        old_balance = account.get_balance()
+        account.withdraw(amount)
+        new_balance = account.get_balance()
+        console.print(f"[bold green]Successfully withdrew ${amount:.2f}![/bold green]")
+        console.print(f"Previous balance: ${old_balance:.2f}")
+        console.print(f"New balance: ${new_balance:.2f}")
+    except ValueError as e:
+        console.print(f"Error: {str(e)}", style="bold red")
     Prompt.ask("\nPress Enter to continue")
 
 def view_transactions():
     """View transaction history for a user's account"""
     console.print("\n[bold cyan]View Transactions[/bold cyan]")
     
-    # Select user
     user = select_user()
     if not user:
         Prompt.ask("\nPress Enter to continue")
         return
     
-    # Select account
     account = select_account(user)
     if not account:
         Prompt.ask("\nPress Enter to continue")
         return
     
-    # Display transactions
     transactions = account.get_transaction_history()
     if not transactions:
         console.print("No transactions found for this account.", style="yellow")
