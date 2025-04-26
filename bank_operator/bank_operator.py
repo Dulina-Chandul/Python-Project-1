@@ -58,31 +58,28 @@ def select_user():
     if not users:
         console.print("No users available. Please create a user first.", style="bold red")
         return None
-    
+
     table = Table(title="👤 Select User")
     table.add_column("ID", style="cyan", justify="center")
     table.add_column("Name", style="green")
     table.add_column("Email", style="blue")
-    
+
     for i, user in enumerate(users):
-        table.add_row(
-            str(i + 1),
-            user.name,
-            user.email
-        )
-    
+        table.add_row(str(i + 1), user.name, user.email)
+
     console.print(table)
-    
-    try:
-        choice = Prompt.ask("Select user by ID")
-        choice = int(choice)
-        if choice < 1 or choice > len(users):
-            console.print("Invalid user selection.", style="bold red")
-            return None
-        return users[choice - 1]
-    except ValueError:
-        console.print("Invalid user selection.", style="bold red")
+
+    choice = Prompt.ask("Select user by ID")
+    if not choice.isdigit():
+        console.print("Invalid input. Please enter a number.", style="bold red")
         return None
+
+    choice = int(choice)
+    if choice < 1 or choice > len(users):
+        console.print("Invalid user selection. Please select a valid ID.", style="bold red")
+        return None
+
+    return users[choice - 1]
 
 def create_account():
     """Create a new account for an existing user"""
